@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""This script demonstrates how to train Diffusion Policy on the PushT environment."""
+"""This script demonstrates how to train Flow Matching Policy on the PushT environment."""
 
 from pathlib import Path
 
@@ -21,14 +21,14 @@ import torch
 from lerobot.configs.types import FeatureType
 from lerobot.datasets.lerobot_dataset import LeRobotDataset, LeRobotDatasetMetadata
 from lerobot.datasets.utils import dataset_to_policy_features
-from lerobot.policies.diffusion.configuration_diffusion import DiffusionConfig
-from lerobot.policies.diffusion.modeling_diffusion import DiffusionPolicy
+from lerobot.policies.flow.configuration_flow import FlowConfig
+from lerobot.policies.flow.modeling_flow import FlowPolicy
 from lerobot.policies.factory import make_pre_post_processors
 
 
 def main():
     # Create a directory to store the training checkpoint.
-    output_directory = Path("outputs/train/example_pusht_diffusion")
+    output_directory = Path("outputs/train/example_pusht_flow")
     output_directory.mkdir(parents=True, exist_ok=True)
 
     # # Select your device
@@ -49,12 +49,16 @@ def main():
     output_features = {key: ft for key, ft in features.items() if ft.type is FeatureType.ACTION}
     input_features = {key: ft for key, ft in features.items() if key not in output_features}
 
-    # Policies are initialized with a configuration class, in this case `DiffusionConfig`. For this example,
+    # Policies are initialized with a configuration class, in this case `FlowConfig`. For this example,
     # we'll just use the defaults and so no arguments other than input/output features need to be passed.
-    cfg = DiffusionConfig(input_features=input_features, output_features=output_features, down_dims=(256, 512, 1024))
+    cfg = FlowConfig(
+        input_features=input_features, 
+        output_features=output_features,
+        down_dims=(256, 512, 1024),  # Reduce model size for PushT
+    )
 
     # We can now instantiate our policy with this config and the dataset stats.
-    policy = DiffusionPolicy(cfg)
+    policy = FlowPolicy(cfg)
     policy.train()
     policy.to(device)
     preprocessor, postprocessor = make_pre_post_processors(cfg, dataset_stats=dataset_metadata.stats)
@@ -67,7 +71,7 @@ def main():
         "action": [i / dataset_metadata.fps for i in cfg.action_delta_indices],
     }
 
-    # In this case with the standard configuration for Diffusion Policy, it is equivalent to this:
+    # In this case with the standard configuration for Flow Policy, it is equivalent to this:
     delta_timestamps = {
         # Load the previous image and state at -0.1 seconds before current frame,
         # then load current image and state corresponding to 0.0 second.
