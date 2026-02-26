@@ -111,7 +111,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--policy",
         required=True,
-        choices=["diffusion", "flow"],
+        choices=["diffusion", "flow", "groot"],
         help="Policy type to load.",
     )
     p.add_argument(

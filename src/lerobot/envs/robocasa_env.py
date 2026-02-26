@@ -225,6 +225,9 @@ class RobocasaGymEnv(gym.Env):
 
     @property
     def task_description(self) -> str:
+        ep_meta = getattr(self._env, "ep_meta", None)
+        if ep_meta and "lang" in ep_meta:
+            return ep_meta["lang"]
         return self._env.__class__.__name__
 
     @property

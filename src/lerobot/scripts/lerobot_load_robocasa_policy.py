@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Load and verify a trained policy (diffusion or flow matching) saved from RoboCasa training.
+Load and verify a trained policy (diffusion, flow matching, or groot) saved from RoboCasa training.
 
 Usage:
     # Load diffusion policy (latest checkpoint)
@@ -8,6 +8,9 @@ Usage:
 
     # Load flow matching policy at a specific checkpoint
     python lerobot_load_robocasa_policy.py --policy flow --checkpoint 050000
+
+    # Load groot policy
+    python lerobot_load_robocasa_policy.py --policy groot
 
     # Specify custom outputs root
     python lerobot_load_robocasa_policy.py --policy diffusion --outputs_root /path/to/outputs
@@ -30,6 +33,7 @@ OUTPUTS_ROOT = Path("/home/junhyeong/data/lerobot/robocasa/kitchen_pnp/PnPC2M/ou
 POLICY_DIRS = {
     "diffusion": OUTPUTS_ROOT / "diffusion",
     "flow": OUTPUTS_ROOT / "flow",
+    "groot": OUTPUTS_ROOT / "groot",
 }
 
 
@@ -131,7 +135,7 @@ def parse_args() -> argparse.Namespace:
         "--policy",
         type=str,
         required=True,
-        choices=["diffusion", "flow"],
+        choices=["diffusion", "flow", "groot"],
         help="Policy type to load.",
     )
     parser.add_argument(

@@ -438,6 +438,8 @@ def train(cfg: RobocasaTrainPipelineConfig, accelerator: Accelerator | None = No
     for _ in range(step, cfg.steps):
         start_time = time.perf_counter()
         batch = next(dl_iter)
+        if "prompt" in batch:
+            batch["task"] = batch["prompt"]
         batch = preprocessor(batch)
         train_tracker.dataloading_s = time.perf_counter() - start_time
 
